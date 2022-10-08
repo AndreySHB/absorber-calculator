@@ -1,9 +1,6 @@
 package main.java;
 
-import main.java.model.Beam;
-import main.java.model.Grid;
-import main.java.model.Material;
-import main.java.model.PorousMaterial;
+import main.java.model.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,10 +29,10 @@ public class Main {
         Grid grid = new Grid(rMax, zMax);
         int availableProc = Runtime.getRuntime().availableProcessors();
         Material material = new PorousMaterial(absCoff, avgDist, n1, n2);
-        Beam beam = new Beam(num_photons / availableProc, meanRadius);
         ExecutorService service = Executors.newFixedThreadPool(availableProc);
         List<Callable<int[]>> tasks = new ArrayList<>();
         for (int i = 0; i < availableProc; i++) {
+            Beam beam = new GaussBeam(num_photons / availableProc, meanRadius);
             tasks.add(new BeamPropagationTask(beam, grid, material));
         }
         List<Future<int[]>> futures = service.invokeAll(tasks);
@@ -55,10 +52,10 @@ public class Main {
         }
 
         long registered_photons_count = accum_photons + lost_photons;
-        System.out.printf("Elapsed time %d s%n", elapsedTime);
+        System.out.printf("Elapsed time %d s%n", elapsedTime/1000);
         System.out.printf("Registered photons %s%n", registered_photons_count);
         double ratio = (double) lost_photons / registered_photons_count;
-        System.out.printf("Lost photons ration %f%n", ratio);
+        System.out.printf("Lost photons ratio %f%n", ratio);
 
         int[][] accumArray = grid.getAccumArray();
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(filePath1)) {

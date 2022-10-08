@@ -7,6 +7,12 @@ import static java.lang.Math.*;
 import static main.java.util.AbsorberUtil.RANDOM;
 
 public class GeometricUtil {
+
+    /**
+     * simulate photon scattering in medium with refractive index = n1 on a spherical particle with refractive index = n2,
+     * the case of multiple inner reflection is considered
+     * @return scattered angle
+     */
     public static double getRandomTeta(double n1, double n2) {
         double teta = 0;
         boolean isIn;

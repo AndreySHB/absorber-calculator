@@ -7,9 +7,13 @@ import main.java.model.Photon;
 
 import java.util.concurrent.Callable;
 
-import static main.java.util.AbsorberUtil.RANDOM;
 import static main.java.util.AbsorberUtil.isAbsorbedOnDistance;
 
+/**
+ * Describes propagation task of a given beam in a given material,
+ * stores absorbed photons in a grid,
+ * returns the indicatrice of photons passed through
+ */
 public class BeamPropagationTask implements Callable<int[]> {
     private final Beam beam;
 
@@ -26,7 +30,7 @@ public class BeamPropagationTask implements Callable<int[]> {
     public BeamPropagationTask(Beam beam, Grid grid, Material material) {
         {
             tetaStep = Math.PI / 100;
-            indicator = beam.getPhotonAmount() / 100;
+            indicator = beam.initSize() / 100;
         }
         this.beam = beam;
         this.material = material;
@@ -35,12 +39,9 @@ public class BeamPropagationTask implements Callable<int[]> {
 
     @Override
     public int[] call() {
-        for (long i = 0; i < beam.getPhotonAmount(); i++) {
-            Photon photon = new Photon();
-            double sigma = beam.getMeanRadius() / 2;
-            double randR = Math.abs(RANDOM.nextGaussian(0, sigma));
-            photon.setR(randR);
-            if (grid.isNotInBorders((int) Math.round(randR), 0)) {
+        for (long i = 0; beam.hasNextPhoton(); i++) {
+            Photon photon = beam.getNextPhoton();
+            if (grid.isNotInBorders((int) Math.round(photon.getR()), 0)) {
                 addToLostPhotons(photon);
                 continue;
             }
@@ -80,7 +81,7 @@ public class BeamPropagationTask implements Callable<int[]> {
     private void countProgress(long i) {
         if (i % indicator == 0) {
             String name = Thread.currentThread().getName();
-            System.out.printf("progress for %s is %d%% %n", name, 100 * i / beam.getPhotonAmount());
+            System.out.printf("progress for %s is %d%% %n", name, 100 * i / beam.initSize());
         }
     }
 }

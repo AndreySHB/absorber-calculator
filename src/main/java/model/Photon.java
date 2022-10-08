@@ -2,6 +2,13 @@ package main.java.model;
 
 public class Photon {
 
+    public Photon() {
+    }
+
+    public Photon(double r) {
+        this.r = r;
+    }
+
     private double teta = 0;
 
     private double r = 0;

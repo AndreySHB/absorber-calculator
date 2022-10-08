@@ -1,7 +1,7 @@
 package main.java.model;
 
 import java.util.Arrays;
-
+/**Spherically symmetrical grid 2 store position and amount of absorbed photons*/
 public class Grid {
 
     private final int rMax;
@@ -37,10 +37,9 @@ public class Grid {
         int[][] array = new int[rMax][zMax];
         for (int i = 0; i < zMax; i++) {
             for (int j = 0; j < rMax; j++) {
-                array[j][i] = cells[j][i].accumulated;
+                array[j][i] = cells[j][i].getAccumulated();
             }
         }
-
         return array;
     }
 
